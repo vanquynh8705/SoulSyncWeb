@@ -141,7 +141,7 @@ export default function App() {
   <img
     src="/logoNew.png"
     alt="SoulSync logo"
-    className="h-20 w-auto object-contain"
+    className="h-30 w-auto object-contain"
   />
 </button>
 
