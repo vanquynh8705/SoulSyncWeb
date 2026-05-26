@@ -1,0 +1,6 @@
+{
+  "name": "SoulSync",
+  "description": "Không gian yên tĩnh lý tưởng giúp sinh viên tìm kiếm sự bình yên, làm bài đánh giá tâm lý và trò chuyện giải cứu căng thẳng cùng AI thấu cảm.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

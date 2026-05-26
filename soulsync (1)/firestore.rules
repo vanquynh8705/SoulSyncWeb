@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net (Pillar 4.1)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Definitions & Global Helpers (Pillar 3)
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Users Collection Match block
+    match /users/{userId} {
+      // PII Isolation Protection (Pillar 6, 8)
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Creation Protection (Pillar 2)
+      allow create: if isSignedIn() && 
+                       isOwner(userId) && 
+                       isValidId(userId) && 
+                       isValidUser(request.resource.data) && 
+                       request.resource.data.isAdmin == false; // No self-escalation on registration
+
+      // Update Protection (Pillar 4, 12, 13)
+      allow update: if isSignedIn() && 
+                       isOwner(userId) && 
+                       isValidId(userId) && 
+                       isValidUser(request.resource.data) && 
+                       request.resource.data.isAdmin == resource.data.isAdmin; // Strict role locks
+
+      allow delete: if isAdmin();
+    }
+
+    // Academic Concerns Curated Content Collection
+    match /contents/{contentId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Validation blueprints - Schema enforcing (Pillar 2)
+    function isValidUser(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 100 &&
+             data.avatarColor is string && data.avatarColor.size() <= 50 &&
+             data.isAdmin is bool &&
+             data.keys().hasAll(['id', 'name', 'email', 'avatarColor', 'isAdmin']) &&
+             data.keys().size() == 5;
+    }
+
+    function isValidContent(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.title is string && data.title.size() <= 200 &&
+             data.type is string && data.type.size() <= 50 &&
+             data.text is string && data.text.size() <= 2000 &&
+             data.category is string && data.category.size() <= 50 &&
+             data.keys().hasAll(['id', 'title', 'type', 'text', 'category']) &&
+             data.keys().size() == 5;
+    }
+  }
+}

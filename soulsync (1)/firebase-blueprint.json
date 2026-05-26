@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with roles and custom metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The Firebase Authentication UID of the user" },
+        "name": { "type": "string", "description": "Display name of the student or administrator" },
+        "email": { "type": "string", "format": "email", "description": "User email address" },
+        "avatarColor": { "type": "string", "description": "Tailwind color class for avatar background" },
+        "isAdmin": { "type": "boolean", "description": "Flag to mark administrators" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "email", "isAdmin"]
+    },
+    "Content": {
+      "title": "Content",
+      "description": "Curated mindfulness and academic pressure resources managed by Admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The unique document ID of the resource" },
+        "title": { "type": "string", "description": "Title of the mental health capsule or article" },
+        "type": { "type": "string", "description": "Type of the resource (e.g., Mẹo vặt, Thực hành, Đọc thêm)" },
+        "text": { "type": "string", "description": "Core body text of the resource or exercise description" },
+        "category": { "type": "string", "description": "Mental health concern category (burnout, overthinking, urgency, coping)" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "text", "category"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Information stored for authenticated students and administrators"
+    },
+    "/contents/{contentId}": {
+      "schema": "Content",
+      "description": "Curated resources for university student challenges and mindfulness"
+    }
+  }
+}
