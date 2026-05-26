@@ -128,8 +128,22 @@ export default function App() {
             </button>
           </div>
 
-          {/* Logo Brand Name Link Removed */}
-          <div className="hidden md:flex items-center" />
+          {/* Logo */}
+<button
+  onClick={() => {
+    setActiveTab("home");
+    setIsChatOpen(false);
+    setTimeout(() => scrollToSection("hero"), 50);
+  }}
+  className="flex items-center cursor-pointer"
+  aria-label="Về trang chủ SoulSync"
+>
+  <img
+    src="/logoNew.png"
+    alt="SoulSync logo"
+    className="h-20 w-auto object-contain"
+  />
+</button>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-8 font-display">
